@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff0f4">
+  <title>Manga & Comic Translator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn" id="homeBtn" aria-label="Início">⌂</button>
+    <div class="top-actions"><button class="icon-btn" id="historyTop">◷</button><button class="icon-btn" id="menuBtn">⋮</button></div>
+  </header>
+  <main>
+    <section id="homeView" class="view">
+      <h1>Manga & Comic Translator</h1>
+      <form id="urlForm" class="searchbar"><span>⌕</span><input id="mangaUrl" type="url" placeholder="Pesquisar ou digitar URL" required><button type="submit" aria-label="Abrir">➜</button></form>
+      <div class="section-heading"><h2>Histórico</h2><button class="text-btn" id="seeHistory">Ver tudo</button></div>
+      <div id="historyList" class="history-list"><p class="muted">Seus mangás acessados aparecerão aqui.</p></div>
+      <section class="shelf"><h2>Manga Plus</h2><div class="covers">
+        <button class="cover cover-one" data-demo="Salamander"><b>Salamander</b><small>Ch. 1</small></button>
+        <button class="cover cover-two" data-demo="Aztec Turning of Heaven"><b>Aztec Turning of Heaven</b><small>Ch. 2</small></button>
+        <button class="cover cover-three" data-demo="Morino-san"><b>Morino-san Just Won't Leave Me Be</b><small>Ch. 5</small></button>
+        <button class="cover cover-four" data-demo="Kindergarten"><b>Kindergarten</b><small>Ch. 1</small></button>
+      </div></section>
+      <section class="shelf"><h2>Bookwalker</h2><div class="covers">
+        <button class="cover cover-five" data-demo="Firefly Wedding"><b>Firefly Wedding</b><small>Volume 1</small></button>
+        <button class="cover cover-six" data-demo="Fool Night"><b>Fool Night</b><small>Volume 1</small></button>
+        <button class="cover cover-seven" data-demo="Fantasy World"><b>Fantasy World</b><small>Volume 2</small></button>
+        <button class="cover cover-eight" data-demo="Author"><b>Author</b><small>Volume 1</small></button>
+      </div></section>
+    </section>
+    <section id="readerView" class="view hidden">
+      <div class="reader-head"><button class="back-btn" id="backHome">‹ Início</button><div><h2 id="readerTitle">Leitor de mangá</h2><p id="readerAddress" class="muted"></p></div></div>
+      <div class="reader-tools"><label class="switch-line"><input type="checkbox" id="autoTranslate" checked><span>Tradução automática</span></label><button class="pill-btn" id="openSource">Abrir site original ↗</button></div>
+      <div id="readerMessage" class="notice">Cole o endereço de um capítulo para abrir o site original. Alguns sites não permitem exibição dentro deste aplicativo.</div>
+      <div id="pageArea" class="page-area"><div class="empty-reader"><span>▧</span><b>Seu capítulo aparecerá aqui</b><p>Use um endereço de capítulo ou adicione imagens diretamente.</p></div></div>
+      <div class="reader-bottom"><button id="prevChapter">← Capítulo anterior</button><button id="nextChapter">Próximo capítulo →</button></div>
+    </section>
+    <section id="historyView" class="view hidden"><h1>Histórico</h1><div id="fullHistory" class="history-full"></div><button class="secondary-btn" id="clearHistory">Limpar histórico</button></section>
+    <section id="settingsView" class="view hidden">
+      <h1>Configurações</h1>
+      <div class="account-card"><div class="google-mark">G</div><div><b>Seu perfil</b><small>Configurações deste dispositivo</small></div><span class="free-tag">Grátis</span></div>
+      <div class="settings-card"><b>Obter mais pontos</b><small>Recursos extras para sua leitura</small></div>
+      <div class="settings-card premium"><b>Atualizar para Premium</b><small>Mais recursos e uma experiência sem interrupções</small></div>
+      <div class="settings-card"><b>Idioma do aplicativo</b><small>Escolha o idioma de exibição do aplicativo</small><select id="appLanguage"><option>Português (Brasil)</option><option>English</option><option>Español</option></select></div>
+      <div class="settings-card"><b>Aparência</b><small>Escolha o modo claro ou escuro para o aplicativo</small><button class="choice selected" data-theme="light">☀️　Modo Claro <span>✓</span></button><button class="choice" data-theme="dark">🌙　Modo Escuro <span></span></button></div>
+      <div class="settings-card"><b>Tradução</b><small>Preferências do leitor</small><label class="setting-row">Tradução automática <input type="checkbox" id="settingsAuto" checked></label><label class="setting-row">Traduzir para <select id="targetLanguage"><option>Português (Brasil)</option><option>English</option><option>Español</option><option>日本語</option></select></label><label class="setting-row">Mecanismo de tradução <select id="engine"><option>Google Tradutor (abrir externamente)</option><option>Microsoft Translator (abrir externamente)</option></select></label></div>
+      <div class="settings-card"><b>Leitura</b><label class="setting-row">Tamanho da fonte <select id="fontSize"><option>100%</option><option>90%</option><option>110%</option><option>125%</option><option>150%</option></select></label><label class="setting-row">Estilo da fonte <select id="fontStyle"><option>Padrão</option><option>Serifada</option><option>Monoespaçada</option></select></label><label class="setting-row">Versão para computador <input type="checkbox" id="desktopMode"></label></div>
+    </section>
+  </main>
+  <nav class="bottom-nav"><button id="navBack" aria-label="Voltar">‹</button><button id="navForward" aria-label="Avançar">›</button><button class="active" data-view="homeView" aria-label="Início">⌂</button><button data-view="settingsView" aria-label="Configurações">•••</button></nav>
+  <div id="popupMenu" class="popup hidden"><button data-go="historyView">◷　Histórico</button><button data-go="settingsView">⚙　Configurações</button><button id="addImages">▧　Adicionar imagens do capítulo</button></div>
+  <input id="imageFiles" type="file" accept="image/*" multiple hidden>
+  <script src="app.js"></script>
+</body></html>
