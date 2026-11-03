@@ -6,3 +6,5 @@
 .menu-row span{flex:1}
 .menu-row select{max-width:48%;border:0;background:transparent;color:var(--muted);font-size:14px;text-align:right;min-width:0}
 .menu-row input[type=checkbox]{width:23px;height:23px;accent-color:var(--pink);flex-shrink:0}
+
+body.desktop-mode main{min-width:900px}body.desktop-mode{overflow-x:auto}
