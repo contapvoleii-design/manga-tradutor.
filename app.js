@@ -57,3 +57,11 @@ $('#fontStyle').onchange=()=>{$('#menuFontStyle').value=$('#fontStyle').value;ap
 $('#desktopMode').onchange=()=>{$('#menuDesktop').checked=$('#desktopMode').checked;applyReadingPrefs()};
 $('#settingsAuto').onchange=()=>{$('#menuAuto').checked=$('#settingsAuto').checked};
 syncMenuPrefs();
+
+
+// Botão de tradução da página atual pelo Google Tradutor.
+$('#translateChapterBtn')?.addEventListener('click',()=>{
+  if(!currentUrl){alert('Abra um capítulo primeiro.');return;}
+  const translateUrl='https://translate.google.com/translate?sl=auto&tl=pt&u='+encodeURIComponent(currentUrl);
+  window.open(translateUrl,'_blank','noopener');
+});
