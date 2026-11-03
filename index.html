@@ -51,7 +51,20 @@
     </section>
   </main>
   <nav class="bottom-nav"><button id="navBack" aria-label="Voltar">‹</button><button id="navForward" aria-label="Avançar">›</button><button class="active" data-view="homeView" aria-label="Início">⌂</button><button data-view="settingsView" aria-label="Configurações">•••</button></nav>
-  <div id="popupMenu" class="popup hidden"><button data-go="historyView">◷　Histórico</button><button data-go="settingsView">⚙　Configurações</button><button id="addImages">▧　Adicionar imagens do capítulo</button></div>
+  <div id="popupMenu" class="popup hidden">
+    <button id="newTab">＋　Nova Aba</button>
+    <button data-go="historyView">◷　Histórico</button>
+    <div class="menu-divider"></div>
+    <label class="menu-row"> <span>文A　Tradução Automática</span><input type="checkbox" id="menuAuto" checked></label>
+    <label class="menu-row"><span>◎　Traduzir para</span><select id="menuLanguage"><option>Português (Brasil)</option><option>English</option><option>Español</option><option>日本語</option></select></label>
+    <label class="menu-row"><span>◎　Mecanismo de Tradução</span><select id="menuEngine"><option>Google Tradutor</option><option>Microsoft Translator</option></select></label>
+    <label class="menu-row"><span>Ｔ　Tamanho da Fonte</span><select id="menuFontSize"><option>100%</option><option>90%</option><option>110%</option><option>125%</option><option>150%</option></select></label>
+    <label class="menu-row"><span>▣　Estilo da Fonte</span><select id="menuFontStyle"><option>Padrão</option><option>Serifada</option><option>Monoespaçada</option></select></label>
+    <label class="menu-row"><span>▱　Versão para computador</span><input type="checkbox" id="menuDesktop"></label>
+    <label class="menu-row"><span>◈　Bloquear anúncios</span><input type="checkbox" id="menuAds"></label>
+    <button data-go="settingsView">⚙　Configurações</button>
+    <button id="addImages">▧　Adicionar imagens do capítulo</button>
+  </div>
   <input id="imageFiles" type="file" accept="image/*" multiple hidden>
   <script src="app.js"></script>
 </body></html>
