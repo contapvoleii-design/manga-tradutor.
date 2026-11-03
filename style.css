@@ -30,3 +30,8 @@ body:has(.reader-screen:not(.hidden)) .bottom-nav{z-index:6}
 /* Menu de três pontos também disponível durante a leitura */
 #readerMenuBtn{font-weight:700;font-size:28px;min-width:30px}
 .reader-screen .browser-address{position:relative;z-index:7}
+
+/* Correção de toque e posicionamento do menu no leitor móvel */
+#bottomMenuBtn{position:relative;z-index:10002;pointer-events:auto;touch-action:manipulation;cursor:pointer}
+.popup{z-index:10010;pointer-events:auto}
+body:has(.reader-screen:not(.hidden)) .popup{top:auto;bottom:88px;right:10px;max-height:78vh}
