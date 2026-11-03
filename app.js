@@ -22,3 +22,38 @@ const savedTheme=localStorage.getItem('mangaTheme');if(savedTheme==='dark'){docu
 $('#settingsAuto').onchange=e=>$('#autoTranslate').checked=e.target.checked;$('#autoTranslate').onchange=e=>$('#settingsAuto').checked=e.target.checked;
 $('#nextChapter').onclick=()=>{if(currentUrl){let next=currentUrl.replace(/chapter-(\d+)/i,(m,n)=>'chapter-'+(Number(n)+1));if(next!==currentUrl)openReader(next);else alert('Não consegui identificar o número do capítulo nesta URL.')}};$('#prevChapter').onclick=()=>{if(currentUrl){let prev=currentUrl.replace(/chapter-(\d+)/i,(m,n)=>'chapter-'+Math.max(1,Number(n)-1));if(prev!==currentUrl)openReader(prev);else alert('Não consegui identificar o número do capítulo nesta URL.')}};
 renderHistory();
+
+// Opções rápidas do menu, sincronizadas com as Configurações.
+const menuPrefs=['menuAuto','menuLanguage','menuEngine','menuFontSize','menuFontStyle','menuDesktop','menuAds'];
+function syncMenuPrefs(){
+  $('#menuAuto').checked=$('#settingsAuto').checked;
+  $('#menuLanguage').value=$('#targetLanguage').value;
+  $('#menuEngine').value=$('#engine').value.includes('Microsoft')?'Microsoft Translator':'Google Tradutor';
+  $('#menuFontSize').value=$('#fontSize').value;
+  $('#menuFontStyle').value=$('#fontStyle').value;
+  $('#menuDesktop').checked=$('#desktopMode').checked;
+  $('#menuAds').checked=localStorage.getItem('mangaAdPreference')==='on';
+  applyReadingPrefs();
+}
+function applyReadingPrefs(){
+  const size=parseInt($('#fontSize').value,10)||100;
+  document.documentElement.style.setProperty('--reader-font-size',(size/100)+'em');
+  const style=$('#fontStyle').value;
+  document.body.style.fontFamily=style==='Serifada'?'Georgia,serif':style==='Monoespaçada'?'monospace':'Arial,Helvetica,sans-serif';
+  document.body.classList.toggle('desktop-mode',$('#desktopMode').checked);
+}
+$('#newTab').onclick=()=>{$('#mangaUrl').value='';show('homeView');$('#mangaUrl').focus()};
+$('#menuAuto').onchange=e=>{$('#settingsAuto').checked=e.target.checked;$('#autoTranslate').checked=e.target.checked};
+$('#menuLanguage').onchange=e=>$('#targetLanguage').value=e.target.value;
+$('#menuEngine').onchange=e=>$('#engine').value=e.target.value==='Microsoft Translator'?'Microsoft Translator (abrir externamente)':'Google Tradutor (abrir externamente)';
+$('#menuFontSize').onchange=e=>{$('#fontSize').value=e.target.value;applyReadingPrefs()};
+$('#menuFontStyle').onchange=e=>{$('#fontStyle').value=e.target.value;applyReadingPrefs()};
+$('#menuDesktop').onchange=e=>{$('#desktopMode').checked=e.target.checked;applyReadingPrefs()};
+$('#menuAds').onchange=e=>{localStorage.setItem('mangaAdPreference',e.target.checked?'on':'off');if(e.target.checked)alert('Preferência salva. Isso não bloqueia anúncios dentro de sites externos.')};
+$('#targetLanguage').onchange=()=>$('#menuLanguage').value=$('#targetLanguage').value;
+$('#engine').onchange=()=>$('#menuEngine').value=$('#engine').value.includes('Microsoft')?'Microsoft Translator':'Google Tradutor';
+$('#fontSize').onchange=()=>{$('#menuFontSize').value=$('#fontSize').value;applyReadingPrefs()};
+$('#fontStyle').onchange=()=>{$('#menuFontStyle').value=$('#fontStyle').value;applyReadingPrefs()};
+$('#desktopMode').onchange=()=>{$('#menuDesktop').checked=$('#desktopMode').checked;applyReadingPrefs()};
+$('#settingsAuto').onchange=()=>{$('#menuAuto').checked=$('#settingsAuto').checked;$('#autoTranslate').checked=$('#settingsAuto').checked};
+syncMenuPrefs();
