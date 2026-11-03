@@ -26,3 +26,7 @@ body:has(.reader-screen:not(.hidden)){padding-bottom:76px;overflow:hidden}
 .reader-controls{position:absolute;right:14px;bottom:16px;display:flex;gap:10px;z-index:2}
 .reader-controls button{width:42px;height:42px;border:0;border-radius:50%;background:#fff;color:#222;box-shadow:0 2px 12px #0003;font-size:27px}
 body:has(.reader-screen:not(.hidden)) .bottom-nav{z-index:6}
+
+/* Menu de três pontos também disponível durante a leitura */
+#readerMenuBtn{font-weight:700;font-size:28px;min-width:30px}
+.reader-screen .browser-address{position:relative;z-index:7}
