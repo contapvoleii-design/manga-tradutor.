@@ -11,7 +11,7 @@ $('#backHome').onclick=()=>show('homeView');$('#homeBtn').onclick=()=>show('home
 $('#menuBtn').onclick=()=>$('#popupMenu').classList.toggle('hidden');
 $$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
 $('#historyTop').onclick=()=>show('historyView');$('#seeHistory').onclick=()=>show('historyView');
-$('[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));document.addEventListener('click',e=>{const menuButton=e.target.closest('#bottomMenuBtn');if(menuButton){e.preventDefault();e.stopPropagation();$('#popupMenu').classList.toggle('hidden');}},true);
+$$('[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));document.addEventListener('click',e=>{const menuButton=e.target.closest('#bottomMenuBtn');if(menuButton){e.preventDefault();e.stopPropagation();$('#popupMenu').classList.toggle('hidden');}},true);
 $('#navBack').onclick=()=>history.back();$('#navForward').onclick=()=>history.forward();
 $$('[data-demo]').forEach(b=>b.onclick=()=>{alert('Adicione o endereço real deste mangá na barra de pesquisa para abrir o capítulo.');$('#mangaUrl').focus()});
 $('#addImages').onclick=()=>{$('#imageFiles').click();$('#popupMenu').classList.add('hidden')};
