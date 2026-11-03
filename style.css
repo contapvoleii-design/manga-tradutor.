@@ -8,3 +8,6 @@
 .menu-row input[type=checkbox]{width:23px;height:23px;accent-color:var(--pink);flex-shrink:0}
 
 body.desktop-mode main{min-width:900px}body.desktop-mode{overflow-x:auto}
+
+.manga-frame{display:block;width:100%;height:calc(100vh - 310px);min-height:520px;border:0;border-radius:14px;background:#fff}
+#pageArea{width:100%;overflow:hidden}
