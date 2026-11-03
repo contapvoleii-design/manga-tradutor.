@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fff0f4">
   <title>Manga & Comic Translator</title>
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
   <header class="topbar">
@@ -33,6 +33,7 @@
     </section>
     <section id="readerView" class="view hidden reader-screen">
       <div class="browser-address"><button id="backHome" aria-label="Voltar ao início">⌂</button><input id="readerAddress" type="url" aria-label="Endereço do capítulo" readonly><button id="reloadPage" aria-label="Recarregar">⟳</button><button id="readerMenuBtn" class="reader-menu-action" aria-label="Abrir menu">☰ Menu</button></div>
+      <div class="reader-translate-bar"><button id="translateChapterBtn">🌐 Traduzir capítulo</button><span>Abre a tradução pelo Google Tradutor</span></div>
       <div id="readerMessage" class="notice reader-notice">Carregando capítulo...</div>
       <div id="pageArea" class="page-area"><div class="empty-reader"><span>▧</span><b>Seu capítulo aparecerá aqui</b><p>Use um endereço de capítulo ou adicione imagens diretamente.</p></div></div>
       <div class="reader-controls"><button id="prevChapter">‹</button><button id="nextChapter">›</button></div>
@@ -65,5 +66,5 @@
     <button id="addImages">▧　Adicionar imagens do capítulo</button>
   </div>
   <input id="imageFiles" type="file" accept="image/*" multiple hidden>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body></html>
