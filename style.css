@@ -11,3 +11,18 @@ body.desktop-mode main{min-width:900px}body.desktop-mode{overflow-x:auto}
 
 .manga-frame{display:block;width:100%;height:calc(100vh - 310px);min-height:520px;border:0;border-radius:14px;background:#fff}
 #pageArea{width:100%;overflow:hidden}
+
+/* Leitor em tela cheia, inspirado na navegação mostrada pelo usuário */
+.reader-screen{position:fixed;z-index:4;inset:0 0 76px;width:100%;max-width:none;margin:0;padding:0;background:var(--bg);display:flex;flex-direction:column;gap:0}
+body:has(.reader-screen:not(.hidden)) .topbar{display:none}
+body:has(.reader-screen:not(.hidden)){padding-bottom:76px;overflow:hidden}
+.browser-address{height:58px;flex:0 0 58px;display:flex;align-items:center;gap:10px;padding:7px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+.browser-address button{border:0;background:transparent;color:var(--text);font-size:26px;min-width:34px}
+.browser-address input{flex:1;min-width:0;height:42px;border:0;border-radius:24px;background:var(--soft);padding:0 15px;color:var(--text);font-size:14px}
+.reader-screen .reader-notice{display:none}
+.reader-screen .page-area{flex:1;min-height:0;margin:0;overflow:auto;background:#fff}
+.reader-screen .manga-frame{width:100%;height:100%;min-height:100%;border:0;border-radius:0;background:#fff}
+.reader-screen .page-area img{width:100%;margin:0 auto 6px}
+.reader-controls{position:absolute;right:14px;bottom:16px;display:flex;gap:10px;z-index:2}
+.reader-controls button{width:42px;height:42px;border:0;border-radius:50%;background:#fff;color:#222;box-shadow:0 2px 12px #0003;font-size:27px}
+body:has(.reader-screen:not(.hidden)) .bottom-nav{z-index:6}
