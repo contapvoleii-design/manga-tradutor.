@@ -51,3 +51,7 @@ body:has(.reader-screen:not(.hidden)) .popup{top:auto;bottom:88px;right:10px;max
 .ocr-results{padding:14px;background:var(--card);color:var(--text);max-height:34vh;overflow:auto;border-bottom:1px solid var(--line);font-size:14px;line-height:1.5}
 .ocr-results section{padding:10px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
 .ocr-results h3{margin:4px 0 10px;color:var(--pink)}
+
+
+.auto-mode-label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);font-weight:600}
+.auto-mode-label input{width:18px;height:18px;accent-color:#f0527b}
