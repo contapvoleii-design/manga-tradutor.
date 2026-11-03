@@ -4,7 +4,8 @@ function saveHistory(url,title){historyItems=historyItems.filter(x=>x.url!==url)
 function renderHistory(){const html=historyItems.length?historyItems.map(x=>`<div class="history-item" data-url="${escapeAttr(x.url)}"><div class="history-thumb">✧</div><small>${escapeHtml(x.title)}</small></div>`).join(''):'<p class="muted">Seus mangás acessados aparecerão aqui.</p>';$('#historyList').innerHTML=html;$('#fullHistory').innerHTML=historyItems.length?historyItems.map(x=>`<div class="history-entry" data-url="${escapeAttr(x.url)}"><b>${escapeHtml(x.title)}</b><p class="muted">${escapeHtml(x.url)} · ${x.at}</p></div>`).join(''):'<p class="muted">Nenhum histórico ainda.</p>';$$('[data-url]').forEach(el=>el.onclick=()=>openReader(el.dataset.url))}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function escapeAttr(s){return escapeHtml(s)}
 function show(id){$$('.view').forEach(v=>v.classList.add('hidden'));$('#'+id).classList.remove('hidden');$$('.bottom-nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));$('#popupMenu').classList.add('hidden')}
-function openReader(url,title){try{let u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw 0;currentUrl=u.href;title=title||u.hostname;$('#readerAddress').value=u.href;$('#pageArea').innerHTML='<iframe class="manga-frame" title="Leitor do site de mangá" referrerpolicy="no-referrer" allow="fullscreen" loading="eager"></iframe>';const frame=$('#pageArea iframe');frame.src=u.href;$('#readerMessage').textContent='Carregando capítulo...';saveHistory(u.href,title);show('readerView')}catch(e){alert('Digite um endereço válido começando com https://')}}
+function openReader(url,title){try{let u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw 0;currentUrl=u.href;title=title||u.hostname;$('#readerAddress').value=u.href;$('#pageArea').innerHTML='<iframe class="manga-frame" title="Leitor do site de mangá" referrerpolicy="no-referrer" allow="fullscreen" loading="eager"></iframe>';const frame=$('#pageArea iframe');frame.src=u.href;$('#readerMessage').textContent='Carregando capítulo...';saveHistory(u.href,title);show('readerView');if(localStorage.getItem('mangaAutoTranslateMode')==='on'){openTranslatedPage(u.href)}}catch(e){alert('Digite um endereço válido começando com https://')}}
+function openTranslatedPage(url){const target='https://translate.google.com/translate?sl=auto&tl=pt&u='+encodeURIComponent(url);window.open(target,'_blank','noopener');}
 $('#urlForm').onsubmit=e=>{e.preventDefault();openReader($('#mangaUrl').value)};
 $('#readerMenuBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();$('#popupMenu').classList.toggle('hidden')});$('#reloadPage').onclick=()=>{const f=$('#pageArea iframe');if(f)f.src=currentUrl};
 $('#backHome').onclick=()=>show('homeView');$('#homeBtn').onclick=()=>show('homeView');
@@ -60,7 +61,8 @@ syncMenuPrefs();
 
 
 // O botão principal inicia a tradução OCR das imagens escolhidas.
-$('#translateChapterBtn')?.addEventListener('click',()=>{if(selectedChapterImages.length){translateChapterImages();}else{$('#imageFiles').click();}});
+$('#translateChapterBtn')?.addEventListener('click',()=>{if(selectedChapterImages.length){translateChapterImages();}else if(currentUrl){openTranslatedPage(currentUrl);}else{$('#imageFiles').click();}});
+const autoMode=$('#autoTranslateMode');if(autoMode){autoMode.checked=localStorage.getItem('mangaAutoTranslateMode')==='on';autoMode.addEventListener('change',()=>{localStorage.setItem('mangaAutoTranslateMode',autoMode.checked?'on':'off');if(autoMode.checked&&currentUrl)openTranslatedPage(currentUrl);});}
 async function translateChapterImages(){
  if(!selectedChapterImages.length){$('#imageFiles').click();return;}
  if(!window.Tesseract){alert('O leitor de texto ainda está carregando. Tente novamente em alguns segundos.');return;}
