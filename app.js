@@ -15,7 +15,7 @@ $('[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));$('#bottomMenuBt
 $('#navBack').onclick=()=>history.back();$('#navForward').onclick=()=>history.forward();
 $$('[data-demo]').forEach(b=>b.onclick=()=>{alert('Adicione o endereço real deste mangá na barra de pesquisa para abrir o capítulo.');$('#mangaUrl').focus()});
 $('#addImages').onclick=()=>{$('#imageFiles').click();$('#popupMenu').classList.add('hidden')};
-$('#imageFiles').onchange=e=>{selectedChapterImages=[...e.target.files];const area=$('#pageArea');area.innerHTML='';selectedChapterImages.forEach(file=>{const img=document.createElement('img');img.src=URL.createObjectURL(file);img.alt='Página do mangá';area.appendChild(img)});$('#ocrResults').classList.add('hidden');};
+$('#imageFiles').onchange=e=>{selectedChapterImages=[...e.target.files];if(!selectedChapterImages.length)return;const area=$('#pageArea');area.innerHTML='';selectedChapterImages.forEach(file=>{const img=document.createElement('img');img.src=URL.createObjectURL(file);img.alt='Página do mangá';area.appendChild(img)});$('#ocrResults').classList.remove('hidden');$('#ocrResults').innerHTML='<p>Imagens carregadas. Toque em Traduzir capítulo para reconhecer e traduzir os textos.</p>';};
 $('#clearHistory').onclick=()=>{if(confirm('Deseja limpar todo o histórico?')){historyItems=[];localStorage.removeItem('mangaHistory');renderHistory()}};
 $$('.choice').forEach(b=>b.onclick=()=>{document.body.classList.toggle('dark',b.dataset.theme==='dark');$$('.choice').forEach(x=>x.classList.toggle('selected',x===b));localStorage.setItem('mangaTheme',b.dataset.theme)});
 const savedTheme=localStorage.getItem('mangaTheme');if(savedTheme==='dark'){document.body.classList.add('dark');$$('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.theme==='dark'))}
@@ -59,15 +59,8 @@ $('#settingsAuto').onchange=()=>{$('#menuAuto').checked=$('#settingsAuto').check
 syncMenuPrefs();
 
 
-// Botão de tradução da página atual pelo Google Tradutor.
-$('#translateChapterBtn')?.addEventListener('click',()=>{
-  if(!currentUrl){alert('Abra um capítulo primeiro.');return;}
-  const translateUrl='https://translate.google.com/translate?sl=auto&tl=pt&u='+encodeURIComponent(currentUrl);
-  window.open(translateUrl,'_blank','noopener');
-});
-
-
-// OCR: reconhece texto nas imagens escolhidas e traduz para português.
+// O botão principal inicia a tradução OCR das imagens escolhidas.
+$('#translateChapterBtn')?.addEventListener('click',()=>{if(selectedChapterImages.length){translateChapterImages();}else{$('#imageFiles').click();}});
 async function translateChapterImages(){
  if(!selectedChapterImages.length){$('#imageFiles').click();return;}
  if(!window.Tesseract){alert('O leitor de texto ainda está carregando. Tente novamente em alguns segundos.');return;}
