@@ -35,3 +35,7 @@ body:has(.reader-screen:not(.hidden)) .bottom-nav{z-index:6}
 #bottomMenuBtn{position:relative;z-index:10002;pointer-events:auto;touch-action:manipulation;cursor:pointer}
 .popup{z-index:10010;pointer-events:auto}
 body:has(.reader-screen:not(.hidden)) .popup{top:auto;bottom:88px;right:10px;max-height:78vh}
+
+
+/* Botão de menu grande e fácil de tocar no leitor */
+.reader-menu-action{min-width:82px!important;width:auto!important;height:40px;padding:0 13px!important;border-radius:22px!important;background:#f0527b!important;color:#fff!important;font-size:15px!important;font-weight:700!important;white-space:nowrap;box-shadow:0 2px 8px #0002}
