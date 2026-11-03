@@ -6,7 +6,7 @@ function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 function show(id){$$('.view').forEach(v=>v.classList.add('hidden'));$('#'+id).classList.remove('hidden');$$('.bottom-nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));$('#popupMenu').classList.add('hidden')}
 function openReader(url,title){try{let u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw 0;currentUrl=u.href;title=title||u.hostname;$('#readerAddress').value=u.href;$('#pageArea').innerHTML='<iframe class="manga-frame" title="Leitor do site de mangá" referrerpolicy="no-referrer" allow="fullscreen" loading="eager"></iframe>';const frame=$('#pageArea iframe');frame.src=u.href;$('#readerMessage').textContent='Carregando capítulo...';saveHistory(u.href,title);show('readerView')}catch(e){alert('Digite um endereço válido começando com https://')}}
 $('#urlForm').onsubmit=e=>{e.preventDefault();openReader($('#mangaUrl').value)};
-$('#openSource').onclick=()=>{if(currentUrl)window.open(currentUrl,'_blank','noopener')};$('#reloadPage').onclick=()=>{const f=$('#pageArea iframe');if(f)f.src=currentUrl};
+$('#openSource').onclick=()=>{if(currentUrl)window.open(currentUrl,'_blank','noopener')};$('#readerMenuBtn').onclick=()=>$('#popupMenu').classList.toggle('hidden');$('#reloadPage').onclick=()=>{const f=$('#pageArea iframe');if(f)f.src=currentUrl};
 $('#backHome').onclick=()=>show('homeView');$('#homeBtn').onclick=()=>show('homeView');
 $('#menuBtn').onclick=()=>$('#popupMenu').classList.toggle('hidden');
 $$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
