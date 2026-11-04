@@ -8,3 +8,5 @@
 .menu-row input[type=checkbox]{width:23px;height:23px;accent-color:var(--pink);flex-shrink:0}
 
 body.desktop-mode main{min-width:900px}body.desktop-mode{overflow-x:auto}
+
+.translation-actions{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0}.translation-actions button{background:var(--pink);color:#fff}.translation-results{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;white-space:pre-wrap;line-height:1.5}.translation-results h3{margin:0 0 8px;font-size:15px}.translation-results .original{color:var(--muted);font-size:13px;margin-bottom:8px}.translation-results .translated{font-size:15px}.translation-actions button:disabled{opacity:.55}
