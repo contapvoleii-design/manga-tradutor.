@@ -1,0 +1,8 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:background="#FFFFFF" android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout android:orientation="horizontal" android:padding="8dp" android:gravity="center_vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <EditText android:id="@+id/urlInput" android:hint="Cole a URL do mangá" android:inputType="textUri" android:singleLine="true" android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp"/>
+        <Button android:id="@+id/openButton" android:text="Abrir" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <WebView android:id="@+id/mangaWebView" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+</LinearLayout>
