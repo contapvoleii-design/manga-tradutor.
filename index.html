@@ -9,8 +9,10 @@
 </head>
 <body>
   <header class="topbar">
-    <button class="icon-btn" id="homeBtn" aria-label="Início">⌂</button>
-    <div class="top-actions"><button class="icon-btn" id="historyTop">◷</button><button class="icon-btn" id="menuBtn">⋮</button></div>
+    <button class="browser-home" id="homeBtn" aria-label="Início">⌂</button>
+    <form id="addressForm" class="addressbar"><input id="addressInput" type="url" placeholder="Pesquisar ou digitar URL" aria-label="Endereço do capítulo"><button type="submit" aria-label="Abrir endereço">↻</button></form>
+    <button class="menu-main" id="menuBtn">☰ Menu</button>
+    <button class="icon-btn history-hidden" id="historyTop" aria-label="Histórico">◷</button>
   </header>
   <main>
     <section id="homeView" class="view">
@@ -37,7 +39,10 @@
       <div class="translation-actions"><button class="pill-btn" id="recognizeBtn">Reconhecer texto (OCR)</button><button class="pill-btn" id="translateBtn">Traduzir imagens</button><button class="pill-btn" id="exportBtn">Exportar imagem traduzida</button></div><p id="translationStatus" class="muted" aria-live="polite"></p><div id="translationResults"></div>
       <div id="readerMessage" class="notice">Cole o endereço de um capítulo para abrir o site original. Alguns sites não permitem exibição dentro deste aplicativo.</div>
       <div id="pageArea" class="page-area"><div class="empty-reader"><span>▧</span><b>Seu capítulo aparecerá aqui</b><p>Use um endereço de capítulo ou adicione imagens diretamente.</p></div></div>
-      <div class="reader-bottom"><button id="prevChapter">← Capítulo anterior</button><button id="nextChapter">Próximo capítulo →</button></div>
+      <div class="reader-bottom"><button id="prevChapter">‹</button><button id="nextChapter">›</button></div>
+      <aside class="reader-toolbar" aria-label="Ferramentas do leitor">
+        <button id="toolbarHome" title="Início">⌂</button><button id="toolbarHistory" title="Histórico">▤</button><button id="toolbarImages" title="Adicionar imagens">▧</button><button id="toolbarMenu" title="Menu">☷</button><button id="toolbarFullscreen" title="Tela cheia">⛶</button><button id="toolbarAuto" title="Tradução automática">▶</button><button id="toolbarSettings" title="Configurações">⚙</button><button id="toolbarHelp" title="Ajuda">?</button>
+      </aside>
     </section>
     <section id="historyView" class="view hidden"><h1>Histórico</h1><div id="fullHistory" class="history-full"></div><button class="secondary-btn" id="clearHistory">Limpar histórico</button></section>
     <section id="settingsView" class="view hidden">
