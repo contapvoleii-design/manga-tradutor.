@@ -76,7 +76,7 @@ if(autoMode){
     if(autoMode.checked&&currentUrl)openTranslatedPage(currentUrl);
   });
 }
-function splitForTranslation(text,maxLength=400){
+function splitForTranslation(text,maxLength=120){
   const parts=[];
   const paragraphs=text.split(/\n+/).map(x=>x.trim()).filter(Boolean);
   for(const paragraph of paragraphs){
