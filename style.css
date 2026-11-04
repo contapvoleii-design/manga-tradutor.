@@ -10,3 +10,23 @@
 body.desktop-mode main{min-width:900px}body.desktop-mode{overflow-x:auto}
 
 .translation-actions{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0}.translation-actions button{background:var(--pink);color:#fff}.translation-results{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;white-space:pre-wrap;line-height:1.5}.translation-results h3{margin:0 0 8px;font-size:15px}.translation-results .original{color:var(--muted);font-size:13px;margin-bottom:8px}.translation-results .translated{font-size:15px}.translation-actions button:disabled{opacity:.55}
+
+/* Leitor inspirado na captura enviada: barra compacta e ferramentas laterais. */
+.topbar{height:58px;padding:7px 10px;gap:8px;border-bottom:1px solid #eee;background:#fff;position:sticky;top:0;z-index:8}
+.browser-home{border:0;background:transparent;font-size:23px;color:#454650;min-width:28px}
+.addressbar{height:40px;min-width:0;flex:1;border-radius:24px;background:#f1f2f6;display:flex;align-items:center;padding:0 8px 0 14px;gap:4px}
+.addressbar input{border:0;outline:0;background:transparent;min-width:0;width:100%;font-size:12px;color:#555}
+.addressbar button{border:0;background:transparent;font-size:19px;color:#777;padding:5px}
+.menu-main{border:0;border-radius:24px;background:#ef4d78;color:white;padding:11px 13px;font-size:13px;white-space:nowrap}
+.history-hidden{display:none}
+.reader-toolbar{position:fixed;right:7px;top:20%;z-index:7;display:flex;flex-direction:column;background:#343a3dce;border-radius:7px;overflow:hidden;box-shadow:0 2px 8px #0003}
+.reader-toolbar button{height:39px;width:35px;border:0;border-bottom:1px solid #ffffff25;background:transparent;color:#fff;font-size:18px}
+#readerView{padding:10px 0 90px;max-width:none}
+#readerView .reader-head,#readerView .reader-tools,#readerView .translation-actions,#readerView #translationStatus,#readerView #translationResults,#readerView #readerMessage{margin-left:12px;margin-right:50px}
+#readerView .reader-head{padding:8px 0}
+#readerView .page-area{margin:0;padding:0 0 0 0}
+#readerView .page-area img{width:auto;max-width:100%;max-height:none;margin:0 auto 0 0}
+.reader-bottom{position:fixed;right:12px;bottom:88px;z-index:6;margin:0}
+.reader-bottom button{width:38px;height:38px;border-radius:50%;background:#fff;color:#333;box-shadow:0 1px 5px #0002;font-size:22px;padding:0}
+.bottom-nav{height:64px}
+@media(min-width:700px){#readerView{max-width:900px;margin:auto}.reader-toolbar{right:max(7px,calc((100vw - 900px)/2 + 8px))}}
