@@ -1,0 +1,15 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+android {
+    namespace 'com.mangacomict tradutor'.replace(" ", "")
+    compileSdk 35
+    defaultConfig {
+        applicationId 'com.mangacomicttradutor'
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
+}
