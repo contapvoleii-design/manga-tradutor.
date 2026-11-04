@@ -30,3 +30,5 @@ body.desktop-mode main{min-width:900px}body.desktop-mode{overflow-x:auto}
 .reader-bottom button{width:38px;height:38px;border-radius:50%;background:#fff;color:#333;box-shadow:0 1px 5px #0002;font-size:22px;padding:0}
 .bottom-nav{height:64px}
 @media(min-width:700px){#readerView{max-width:900px;margin:auto}.reader-toolbar{right:max(7px,calc((100vw - 900px)/2 + 8px))}}
+
+.url-reader{width:100%;height:calc(100vh - 190px);min-height:420px;background:#fff;position:relative}.url-reader iframe{display:block;width:100%;height:100%;border:0;background:#fff}.url-reader p{padding:8px 14px;margin:0}@media(max-width:600px){.url-reader{height:calc(100vh - 160px);min-height:380px}#readerView .reader-head,#readerView .reader-tools,#readerView .translation-actions,#readerView #translationStatus,#readerView #translationResults,#readerView #readerMessage{margin-left:10px;margin-right:48px}}
