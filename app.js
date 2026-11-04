@@ -1,5 +1,6 @@
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let historyItems=JSON.parse(localStorage.getItem('mangaHistory')||'[]'), currentUrl='';
+let currentPages=[];
 function saveHistory(url,title){historyItems=historyItems.filter(x=>x.url!==url);historyItems.unshift({url,title,at:new Date().toLocaleDateString('pt-BR')});historyItems=historyItems.slice(0,20);localStorage.setItem('mangaHistory',JSON.stringify(historyItems));renderHistory()}
 function renderHistory(){const html=historyItems.length?historyItems.map(x=>`<div class="history-item" data-url="${escapeAttr(x.url)}"><div class="history-thumb">✧</div><small>${escapeHtml(x.title)}</small></div>`).join(''):'<p class="muted">Seus mangás acessados aparecerão aqui.</p>';$('#historyList').innerHTML=html;$('#fullHistory').innerHTML=historyItems.length?historyItems.map(x=>`<div class="history-entry" data-url="${escapeAttr(x.url)}"><b>${escapeHtml(x.title)}</b><p class="muted">${escapeHtml(x.url)} · ${x.at}</p></div>`).join(''):'<p class="muted">Nenhum histórico ainda.</p>';$$('[data-url]').forEach(el=>el.onclick=()=>openReader(el.dataset.url))}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function escapeAttr(s){return escapeHtml(s)}
@@ -15,7 +16,7 @@ $$('.bottom-nav [data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));
 $('#navBack').onclick=()=>history.back();$('#navForward').onclick=()=>history.forward();
 $$('[data-demo]').forEach(b=>b.onclick=()=>{alert('Adicione o endereço real deste mangá na barra de pesquisa para abrir o capítulo.');$('#mangaUrl').focus()});
 $('#addImages').onclick=()=>{$('#imageFiles').click();$('#popupMenu').classList.add('hidden')};
-$('#imageFiles').onchange=e=>{const area=$('#pageArea');area.innerHTML='';[...e.target.files].forEach(file=>{const img=document.createElement('img');img.src=URL.createObjectURL(file);img.alt='Página do mangá';area.appendChild(img)})};
+$('#imageFiles').onchange=e=>{currentPages=[...e.target.files].map(file=>({file,src:URL.createObjectURL(file),ocr:'',translated:''}));renderPages();$('#translationResults').innerHTML='';$('#translationStatus').textContent=currentPages.length+' imagem(ns) carregada(s). Toque em Reconhecer texto (OCR).'};
 $('#clearHistory').onclick=()=>{if(confirm('Deseja limpar todo o histórico?')){historyItems=[];localStorage.removeItem('mangaHistory');renderHistory()}};
 $$('.choice').forEach(b=>b.onclick=()=>{document.body.classList.toggle('dark',b.dataset.theme==='dark');$$('.choice').forEach(x=>x.classList.toggle('selected',x===b));localStorage.setItem('mangaTheme',b.dataset.theme)});
 const savedTheme=localStorage.getItem('mangaTheme');if(savedTheme==='dark'){document.body.classList.add('dark');$$('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.theme==='dark'))}
@@ -57,3 +58,74 @@ $('#fontStyle').onchange=()=>{$('#menuFontStyle').value=$('#fontStyle').value;ap
 $('#desktopMode').onchange=()=>{$('#menuDesktop').checked=$('#desktopMode').checked;applyReadingPrefs()};
 $('#settingsAuto').onchange=()=>{$('#menuAuto').checked=$('#settingsAuto').checked;$('#autoTranslate').checked=$('#settingsAuto').checked};
 syncMenuPrefs();
+
+
+// OCR e tradução das páginas importadas.
+function renderPages(){
+  const area=$('#pageArea'); area.innerHTML='';
+  currentPages.forEach((page,i)=>{const img=document.createElement('img');img.src=page.src;img.alt='Página '+(i+1)+' do mangá';area.appendChild(img)});
+}
+async function recognizePages(){
+  if(!currentPages.length){$('#translationStatus').textContent='Primeiro adicione imagens pelo menu ⋮ > Adicionar imagens do capítulo.';return}
+  if(!window.Tesseract){$('#translationStatus').textContent='Não foi possível carregar o mecanismo OCR. Verifique a conexão e atualize a página.';return}
+  const btn=$('#recognizeBtn');btn.disabled=true;
+  try{
+    const worker=await Tesseract.createWorker('eng+jpn',1,{logger:m=>{if(m.status==='recognizing text')$('#translationStatus').textContent='Reconhecendo texto: '+Math.round((m.progress||0)*100)+'%'}});
+    for(let i=0;i<currentPages.length;i++){
+      const result=await worker.recognize(currentPages[i].file);
+      currentPages[i].ocr=(result.data.text||'').trim();
+      $('#translationStatus').textContent='OCR: página '+(i+1)+' de '+currentPages.length;
+    }
+    await worker.terminate();renderTranslationResults();
+    $('#translationStatus').textContent='Reconhecimento concluído. Agora toque em “Traduzir imagens”.';
+  }catch(err){$('#translationStatus').textContent='Falha no OCR: '+(err.message||'erro desconhecido')+'. Tente novamente com uma imagem mais nítida.'}
+  finally{btn.disabled=false}
+}
+async function translatePages(){
+  if(!currentPages.length){$('#translationStatus').textContent='Adicione imagens antes de traduzir.';return}
+  if(currentPages.some(p=>!p.ocr))await recognizePages();
+  const btn=$('#translateBtn');btn.disabled=true;
+  try{
+    for(let i=0;i<currentPages.length;i++){
+      const page=currentPages[i];if(!page.ocr)continue;
+      const lang=/[\u3040-\u30ff\u3400-\u9fff]/.test(page.ocr)?'ja':'en';
+      const chunks=page.ocr.match(/[\s\S]{1,450}/g)||[];
+      const translated=[];
+      for(const chunk of chunks){
+        const url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(chunk)+'&langpair='+lang+'|pt-BR';
+        const response=await fetch(url);if(!response.ok)throw new Error('Serviço de tradução indisponível');
+        const data=await response.json();translated.push(data.responseData?.translatedText||'');
+      }
+      page.translated=translated.join('\n');
+      $('#translationStatus').textContent='Traduzindo página '+(i+1)+' de '+currentPages.length;
+      renderTranslationResults();
+    }
+    $('#translationStatus').textContent='Tradução concluída. Você pode exportar as páginas com o texto traduzido.';
+  }catch(err){$('#translationStatus').textContent='Não foi possível concluir a tradução: '+(err.message||'verifique sua conexão')+'.'}
+  finally{btn.disabled=false}
+}
+function renderTranslationResults(){
+  const root=$('#translationResults');
+  root.innerHTML=currentPages.map((p,i)=>'<div class="translation-results"><h3>Página '+(i+1)+'</h3><div class="original">'+escapeHtml(p.ocr||'Nenhum texto reconhecido ainda.')+'</div><div class="translated">'+escapeHtml(p.translated||'Aguardando tradução.')+'</div></div>').join('');
+}
+async function exportTranslatedPages(){
+  const ready=currentPages.filter(p=>p.translated);
+  if(!ready.length){$('#translationStatus').textContent='Traduza pelo menos uma página antes de exportar.';return}
+  for(let i=0;i<ready.length;i++){
+    const p=ready[i],img=new Image();img.src=p.src;
+    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject});
+    const width=img.naturalWidth,height=img.naturalHeight;
+    const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height+Math.max(180,Math.ceil(p.translated.length/45)*30+40);
+    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);ctx.drawImage(img,0,0,width,height);
+    ctx.fillStyle='#fff';ctx.fillRect(0,height,width,canvas.height-height);ctx.fillStyle='#20212a';ctx.font='bold 24px Arial';
+    let y=height+36;ctx.fillText('Tradução — Português (Brasil)',20,y);ctx.font='20px Arial';y+=34;
+    const words=p.translated.split(/\s+/);let line='';
+    for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>width-40){ctx.fillText(line,20,y);line=word;y+=28}else line=test}
+    if(line)ctx.fillText(line,20,y);
+    const link=document.createElement('a');link.download='manga-traduzido-'+(i+1)+'.png';link.href=canvas.toDataURL('image/png');link.click();
+  }
+  $('#translationStatus').textContent='Exportação iniciada para '+ready.length+' página(s).';
+}
+$('#recognizeBtn').onclick=recognizePages;
+$('#translateBtn').onclick=translatePages;
+$('#exportBtn').onclick=exportTranslatedPages;
