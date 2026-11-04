@@ -10,14 +10,14 @@
 <body>
   <header class="topbar">
     <button class="browser-home" id="homeBtn" aria-label="Início">⌂</button>
-    <form id="addressForm" class="addressbar"><input id="addressInput" type="url" placeholder="Pesquisar ou digitar URL" aria-label="Endereço do capítulo"><button type="submit" aria-label="Abrir endereço">↻</button></form>
+    <form id="addressForm" class="addressbar"><input id="addressInput" type="text" placeholder="Pesquisar ou digitar URL" aria-label="Endereço do capítulo"><button type="submit" aria-label="Abrir endereço">↻</button></form>
     <button class="menu-main" id="menuBtn">☰ Menu</button>
     <button class="icon-btn history-hidden" id="historyTop" aria-label="Histórico">◷</button>
   </header>
   <main>
     <section id="homeView" class="view">
       <h1>Manga & Comic Translator</h1>
-      <form id="urlForm" class="searchbar"><span>⌕</span><input id="mangaUrl" type="url" placeholder="Pesquisar ou digitar URL" required><button type="submit" aria-label="Abrir">➜</button></form>
+      <form id="urlForm" class="searchbar"><span>⌕</span><input id="mangaUrl" type="text" placeholder="Pesquisar ou digitar URL" required><button type="submit" aria-label="Abrir">➜</button></form>
       <div class="section-heading"><h2>Histórico</h2><button class="text-btn" id="seeHistory">Ver tudo</button></div>
       <div id="historyList" class="history-list"><p class="muted">Seus mangás acessados aparecerão aqui.</p></div>
       <section class="shelf"><h2>Manga Plus</h2><div class="covers">
@@ -38,7 +38,7 @@
       <div class="reader-tools"><label class="switch-line"><input type="checkbox" id="autoTranslate" checked><span>Tradução automática</span></label><button class="pill-btn" id="openSource">Abrir site original ↗</button></div>
       <div class="translation-actions"><button class="pill-btn" id="recognizeBtn">Reconhecer texto (OCR)</button><button class="pill-btn" id="translateBtn">Traduzir imagens</button><button class="pill-btn" id="exportBtn">Exportar imagem traduzida</button></div><p id="translationStatus" class="muted" aria-live="polite"></p><div id="translationResults"></div>
       <div id="readerMessage" class="notice">Cole o endereço de um capítulo para abrir o site original. Alguns sites não permitem exibição dentro deste aplicativo.</div>
-      <div id="pageArea" class="page-area"><div class="empty-reader"><span>▧</span><b>Seu capítulo aparecerá aqui</b><p>Use um endereço de capítulo ou adicione imagens diretamente.</p></div></div>
+      <div id="urlReader" class="url-reader hidden"><iframe id="chapterFrame" title="Capítulo do mangá" referrerpolicy="no-referrer"></iframe><p id="frameFallback" class="muted">Se o site bloquear a visualização incorporada, use “Abrir site original”.</p></div><div id="pageArea" class="page-area"><div class="empty-reader"><span>▧</span><b>Seu capítulo aparecerá aqui</b><p>Use um endereço de capítulo ou adicione imagens diretamente.</p></div></div>
       <div class="reader-bottom"><button id="prevChapter">‹</button><button id="nextChapter">›</button></div>
       <aside class="reader-toolbar" aria-label="Ferramentas do leitor">
         <button id="toolbarHome" title="Início">⌂</button><button id="toolbarHistory" title="Histórico">▤</button><button id="toolbarImages" title="Adicionar imagens">▧</button><button id="toolbarMenu" title="Menu">☷</button><button id="toolbarFullscreen" title="Tela cheia">⛶</button><button id="toolbarAuto" title="Tradução automática">▶</button><button id="toolbarSettings" title="Configurações">⚙</button><button id="toolbarHelp" title="Ajuda">?</button>
