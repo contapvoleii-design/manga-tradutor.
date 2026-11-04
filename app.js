@@ -69,6 +69,46 @@ function renderPages(){
   const area=$('#pageArea'); area.innerHTML='';
   currentPages.forEach((page,i)=>{const img=document.createElement('img');img.src=page.src;img.alt='Página '+(i+1)+' do mangá';area.appendChild(img)});
 }
+
+/* Leitura de páginas públicas a partir do URL usando o Cloudflare Worker do projeto.
+   O Worker precisa estar publicado e configurado uma única vez neste dispositivo. */
+const WORKER_KEY='mangaWorkerEndpoint';
+function getWorkerEndpoint(){
+  let endpoint=localStorage.getItem(WORKER_KEY)||'';
+  if(!endpoint){
+    endpoint=prompt('Cole a URL do Cloudflare Worker do Manga Tradutor (ex.: https://seu-worker.workers.dev):','')||'';
+    endpoint=endpoint.trim().replace(/\\/$/,'');
+    if(endpoint){localStorage.setItem(WORKER_KEY,endpoint);}
+  }
+  return endpoint;
+}
+async function loadPagesFromCurrentUrl(){
+  if(!currentUrl){$('#translationStatus').textContent='Abra primeiro o endereço do capítulo.';return;}
+  const endpoint=getWorkerEndpoint();
+  if(!endpoint){$('#translationStatus').textContent='Para localizar páginas do site, publique o cloudflare-worker.js e informe o endereço do Worker.';return;}
+  const btn=$('#loadUrlPagesBtn');if(btn)btn.disabled=true;
+  $('#translationStatus').textContent='Analisando o HTML público do capítulo e procurando imagens…';
+  try{
+    const api=new URL(endpoint);
+    api.searchParams.set('url',currentUrl);
+    const response=await fetch(api.href,{headers:{'Accept':'application/json'}});
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.error||'O Worker não conseguiu ler esta página.');
+    const images=(data.images||[]).filter(src=>/^https?:\\/\\//i.test(src));
+    if(!images.length)throw new Error(data.note||'Nenhuma imagem pública foi encontrada. Este site pode carregar páginas por JavaScript.');
+    currentPages=images.map(src=>({file:src,src,ocr:'',translated:''}));
+    $('#urlReader').classList.add('hidden');$('#pageArea').classList.remove('hidden');
+    renderPages();
+    $('#readerTitle').textContent=data.pageTitle||'Leitor de mangá';
+    $('#translationStatus').textContent=images.length+' imagem(ns) encontradas. Agora toque em “Reconhecer texto (OCR)”.';
+    $('#readerMessage').textContent='Páginas públicas encontradas no URL. Alguns sites carregam imagens dinamicamente ou exigem sessão; nesses casos, use o site original ou importe as imagens.';
+  }catch(err){
+    $('#translationStatus').textContent='Não foi possível obter as páginas: '+(err.message||'erro de conexão')+'. Você ainda pode abrir o site original ou adicionar imagens manualmente.';
+  }finally{if(btn)btn.disabled=false;}
+}
+const loadUrlPagesButton=$('#loadUrlPagesBtn');
+if(loadUrlPagesButton)loadUrlPagesButton.onclick=loadPagesFromCurrentUrl;
+
 async function recognizePages(){
   if(!currentPages.length){$('#translationStatus').textContent='Primeiro adicione imagens pelo menu ⋮ > Adicionar imagens do capítulo.';return}
   if(!window.Tesseract){$('#translationStatus').textContent='Não foi possível carregar o mecanismo OCR. Verifique a conexão e atualize a página.';return}
