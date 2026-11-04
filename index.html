@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fff0f4">
   <title>Manga & Comic Translator</title>
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topbar">
@@ -31,12 +31,12 @@
         <button class="cover cover-eight" data-demo="Author"><b>Author</b><small>Volume 1</small></button>
       </div></section>
     </section>
-    <section id="readerView" class="view hidden reader-screen">
-      <div class="browser-address"><button id="backHome" aria-label="Voltar ao início">⌂</button><input id="readerAddress" type="url" aria-label="Endereço do capítulo" readonly><button id="reloadPage" aria-label="Recarregar">⟳</button><button id="readerMenuBtn" class="reader-menu-action" aria-label="Abrir menu">☰ Menu</button></div>
-      <div class="reader-translate-bar"><button id="translateChapterBtn">🌐 Traduzir capítulo</button><button id="translateImagesBtn">🖼️ Traduzir imagens</button><label>Idioma do texto <select id="ocrLanguage"><option value="eng">Inglês</option><option value="jpn">Japonês</option><option value="kor">Coreano</option><option value="chi_sim">Chinês simplificado</option><option value="spa">Espanhol</option><option value="fra">Francês</option><option value="deu">Alemão</option></select></label><label class="auto-mode-label"><input type="checkbox" id="autoTranslateMode"> Modo automático</label></div><div id="ocrResults" class="ocr-results hidden"></div>
-      <div id="readerMessage" class="notice reader-notice">Carregando capítulo...</div>
+    <section id="readerView" class="view hidden">
+      <div class="reader-head"><button class="back-btn" id="backHome">‹ Início</button><div><h2 id="readerTitle">Leitor de mangá</h2><p id="readerAddress" class="muted"></p></div></div>
+      <div class="reader-tools"><label class="switch-line"><input type="checkbox" id="autoTranslate" checked><span>Tradução automática</span></label><button class="pill-btn" id="openSource">Abrir site original ↗</button></div>
+      <div id="readerMessage" class="notice">Cole o endereço de um capítulo para abrir o site original. Alguns sites não permitem exibição dentro deste aplicativo.</div>
       <div id="pageArea" class="page-area"><div class="empty-reader"><span>▧</span><b>Seu capítulo aparecerá aqui</b><p>Use um endereço de capítulo ou adicione imagens diretamente.</p></div></div>
-      <div class="reader-controls"><button id="prevChapter">‹</button><button id="nextChapter">›</button></div>
+      <div class="reader-bottom"><button id="prevChapter">← Capítulo anterior</button><button id="nextChapter">Próximo capítulo →</button></div>
     </section>
     <section id="historyView" class="view hidden"><h1>Histórico</h1><div id="fullHistory" class="history-full"></div><button class="secondary-btn" id="clearHistory">Limpar histórico</button></section>
     <section id="settingsView" class="view hidden">
@@ -50,7 +50,7 @@
       <div class="settings-card"><b>Leitura</b><label class="setting-row">Tamanho da fonte <select id="fontSize"><option>100%</option><option>90%</option><option>110%</option><option>125%</option><option>150%</option></select></label><label class="setting-row">Estilo da fonte <select id="fontStyle"><option>Padrão</option><option>Serifada</option><option>Monoespaçada</option></select></label><label class="setting-row">Versão para computador <input type="checkbox" id="desktopMode"></label></div>
     </section>
   </main>
-  <nav class="bottom-nav"><button id="navBack" aria-label="Voltar">‹</button><button id="navForward" aria-label="Avançar">›</button><button class="active" data-view="homeView" aria-label="Início">⌂</button><button id="bottomMenuBtn" aria-label="Abrir menu">•••</button></nav>
+  <nav class="bottom-nav"><button id="navBack" aria-label="Voltar">‹</button><button id="navForward" aria-label="Avançar">›</button><button class="active" data-view="homeView" aria-label="Início">⌂</button><button data-view="settingsView" aria-label="Configurações">•••</button></nav>
   <div id="popupMenu" class="popup hidden">
     <button id="newTab">＋　Nova Aba</button>
     <button data-go="historyView">◷　Histórico</button>
@@ -66,6 +66,5 @@
     <button id="addImages">▧　Adicionar imagens do capítulo</button>
   </div>
   <input id="imageFiles" type="file" accept="image/*" multiple hidden>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <script src="app.js?v=12"></script>
+  <script src="app.js"></script>
 </body></html>
