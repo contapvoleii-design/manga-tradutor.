@@ -60,39 +60,111 @@ $('#settingsAuto').onchange=()=>{$('#menuAuto').checked=$('#settingsAuto').check
 syncMenuPrefs();
 
 
-// O botão principal inicia a tradução OCR das imagens escolhidas.
-$('#translateChapterBtn')?.addEventListener('click',()=>{if(selectedChapterImages.length){translateChapterImages();}else{$('#readerMessage').textContent='Primeiro adicione as imagens do capítulo pelo menu ☰ ou pelo botão abaixo.';$('#imageFiles').click();}});
-const autoMode=$('#autoTranslateMode');if(autoMode){autoMode.checked=localStorage.getItem('mangaAutoTranslateMode')==='on';autoMode.addEventListener('change',()=>{localStorage.setItem('mangaAutoTranslateMode',autoMode.checked?'on':'off');if(autoMode.checked&&currentUrl)openTranslatedPage(currentUrl);});}
+// Tradução OCR: reconhece cada imagem e traduz o texto detectado.
+$('#translateChapterBtn')?.addEventListener('click',()=>{
+  if(selectedChapterImages.length){translateChapterImages();}
+  else{
+    $('#readerMessage').textContent='Primeiro escolha as imagens do capítulo. Depois toque em Traduzir imagens.';
+    $('#imageFiles').click();
+  }
+});
+const autoMode=$('#autoTranslateMode');
+if(autoMode){
+  autoMode.checked=localStorage.getItem('mangaAutoTranslateMode')==='on';
+  autoMode.addEventListener('change',()=>{
+    localStorage.setItem('mangaAutoTranslateMode',autoMode.checked?'on':'off');
+    if(autoMode.checked&&currentUrl)openTranslatedPage(currentUrl);
+  });
+}
+function splitForTranslation(text,maxLength=400){
+  const parts=[];
+  const paragraphs=text.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  for(const paragraph of paragraphs){
+    if(paragraph.length<=maxLength){parts.push(paragraph);continue;}
+    const sentences=paragraph.match(/[^.!?。！？]+[.!?。！？]?/g)||[paragraph];
+    let current='';
+    for(const sentence of sentences){
+      if((current+' '+sentence).trim().length>maxLength&&current){
+        parts.push(current.trim());current='';
+      }
+      let rest=sentence.trim();
+      while(rest.length>maxLength){
+        if(current){parts.push(current.trim());current='';}
+        parts.push(rest.slice(0,maxLength));rest=rest.slice(maxLength);
+      }
+      current=(current+' '+rest).trim();
+    }
+    if(current)parts.push(current);
+  }
+  return parts;
+}
+async function requestTranslation(text,source,target){
+  const endpoint='https://api.mymemory.translated.net/get?q='+encodeURIComponent(text)+'&langpair='+encodeURIComponent(source+'|'+target);
+  const response=await fetch(endpoint,{method:'GET',headers:{'Accept':'application/json'}});
+  if(!response.ok)throw new Error('O serviço de tradução respondeu com erro HTTP '+response.status+'.');
+  const data=await response.json();
+  if(data.quotaFinished)throw new Error('A cota diária gratuita de tradução foi atingida. Tente novamente amanhã.');
+  if(data.responseStatus!==200)throw new Error(data.responseDetails||'O serviço não conseguiu traduzir este trecho.');
+  const translated=data.responseData?.translatedText;
+  if(!translated)throw new Error('O serviço de tradução retornou um texto vazio.');
+  return translated;
+}
 async function translateChapterImages(){
- if(!selectedChapterImages.length){$('#imageFiles').click();return;}
- if(!window.Tesseract){alert('O leitor de texto ainda está carregando. Tente novamente em alguns segundos.');return;}
- const btn=$('#translateImagesBtn'),out=$('#ocrResults');btn.disabled=true;btn.textContent='⏳ Lendo imagens...';out.classList.remove('hidden');out.innerHTML='<p>Reconhecendo os textos das páginas...</p>';
- try{
-  const blocks=[];
-  for(let i=0;i<selectedChapterImages.length;i++){
-   btn.textContent='⏳ Página '+(i+1)+'/'+selectedChapterImages.length;
-   const sourceCode=$('#ocrLanguage')?.value||'eng';
-   const result=await Tesseract.recognize(selectedChapterImages[i],sourceCode);
-   const original=(result.data.text||'').trim();
-   if(!original)continue;
-   const chunks=original.match(/[\s\S]{1,450}/g)||[original];
-   const translated=[];
-   for(const chunk of chunks){
+  if(!selectedChapterImages.length){$('#imageFiles').click();return;}
+  if(!window.Tesseract){
+    $('#readerMessage').textContent='O OCR ainda está carregando. Verifique sua internet e tente novamente.';
+    return;
+  }
+  const btn=$('#translateImagesBtn');
+  const chapterBtn=$('#translateChapterBtn');
+  const out=$('#ocrResults');
+  const originalLabel=btn.textContent;
+  btn.disabled=true;
+  chapterBtn.disabled=true;
+  out.classList.remove('hidden');
+  out.innerHTML='<p>Preparando o reconhecimento das páginas...</p>';
+  try{
+    const sourceCode=$('#ocrLanguage')?.value||'eng';
     const sourceMap={eng:'en',jpn:'ja',kor:'ko',chi_sim:'zh-CN',spa:'es',fra:'fr',deu:'de'};
     const targetMap={'Português (Brasil)':'pt-BR','English':'en','Español':'es','日本語':'ja'};
     const source=sourceMap[sourceCode]||'en';
     const target=targetMap[$('#targetLanguage').value]||'pt-BR';
-    const url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(chunk)+'&langpair='+encodeURIComponent(source+'|'+target);
-    const response=await fetch(url);if(!response.ok)throw new Error('Falha no serviço de tradução');
-    const data=await response.json();
-    const translatedText=data.responseData?.translatedText;
-    if(!translatedText)throw new Error(data.responseDetails||'Resposta vazia do serviço de tradução');
-    translated.push(translatedText);
-   }
-   blocks.push('<section><h3>Página '+(i+1)+'</h3><p><b>Original:</b><br>'+escapeHtml(original)+'</p><p><b>Português:</b><br>'+escapeHtml(translated.join(' '))+'</p></section>');
+    const blocks=[];
+    for(let i=0;i<selectedChapterImages.length;i++){
+      const file=selectedChapterImages[i];
+      btn.textContent='⏳ OCR página '+(i+1)+'/'+selectedChapterImages.length;
+      out.innerHTML='<p>Reconhecendo o texto da página '+(i+1)+' de '+selectedChapterImages.length+'...</p>';
+      const result=await Tesseract.recognize(file,sourceCode,{
+        logger:message=>{
+          if(message.status==='recognizing text'){
+            const percent=Math.round((message.progress||0)*100);
+            out.innerHTML='<p>Reconhecendo página '+(i+1)+' de '+selectedChapterImages.length+': '+percent+'%</p>';
+          }
+        }
+      });
+      const original=(result.data.text||'').trim();
+      if(!original){
+        blocks.push('<section><h3>Página '+(i+1)+'</h3><p>Não encontrei texto legível. Confira se o idioma do OCR está correto.</p></section>');
+        continue;
+      }
+      const chunks=splitForTranslation(original);
+      const translated=[];
+      for(let j=0;j<chunks.length;j++){
+        btn.textContent='🌐 Traduzindo página '+(i+1)+'/'+selectedChapterImages.length;
+        translated.push(await requestTranslation(chunks[j],source,target));
+      }
+      blocks.push('<section><h3>Página '+(i+1)+'</h3><p><b>Texto reconhecido:</b><br>'+escapeHtml(original).replace(/\n/g,'<br>')+'</p><p><b>Tradução:</b><br>'+escapeHtml(translated.join('\n')).replace(/\n/g,'<br>')+'</p></section>');
+      out.innerHTML=blocks.join('');
+    }
+    out.innerHTML=blocks.length?blocks.join(''):'<p>Nenhum texto foi encontrado nas imagens.</p>';
+    $('#readerMessage').textContent='Processamento concluído. Confira o texto reconhecido e a tradução abaixo das páginas.';
+  }catch(err){
+    out.innerHTML='<p>Não foi possível concluir a tradução: '+escapeHtml(err.message||'verifique sua internet e tente novamente')+'</p>';
+    $('#readerMessage').textContent='A tradução foi interrompida. Confira a mensagem exibida abaixo.';
+  }finally{
+    btn.disabled=false;
+    chapterBtn.disabled=false;
+    btn.textContent=originalLabel||'🖼️ Traduzir imagens';
   }
-  out.innerHTML=blocks.length?blocks.join(''):'<p>Não encontrei texto legível nas imagens. Tente selecionar outro idioma de OCR.</p>';
- }catch(err){out.innerHTML='<p>Não foi possível concluir a tradução: '+escapeHtml(err.message||'verifique sua internet e tente novamente')+'</p>';}
- finally{btn.disabled=false;btn.textContent='🖼️ Traduzir imagens';}
 }
 $('#translateImagesBtn')?.addEventListener('click',translateChapterImages);
