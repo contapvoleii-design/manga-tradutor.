@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 android {
-    namespace 'com.mangacomict tradutor'.replace(" ", "")
+    namespace 'com.mangacomicttradutor'
     compileSdk 35
     defaultConfig {
         applicationId 'com.mangacomicttradutor'
