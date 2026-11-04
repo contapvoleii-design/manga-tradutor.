@@ -34,6 +34,7 @@
     <section id="readerView" class="view hidden">
       <div class="reader-head"><button class="back-btn" id="backHome">‹ Início</button><div><h2 id="readerTitle">Leitor de mangá</h2><p id="readerAddress" class="muted"></p></div></div>
       <div class="reader-tools"><label class="switch-line"><input type="checkbox" id="autoTranslate" checked><span>Tradução automática</span></label><button class="pill-btn" id="openSource">Abrir site original ↗</button></div>
+      <div class="translation-actions"><button class="pill-btn" id="recognizeBtn">Reconhecer texto (OCR)</button><button class="pill-btn" id="translateBtn">Traduzir imagens</button><button class="pill-btn" id="exportBtn">Exportar imagem traduzida</button></div><p id="translationStatus" class="muted" aria-live="polite"></p><div id="translationResults"></div>
       <div id="readerMessage" class="notice">Cole o endereço de um capítulo para abrir o site original. Alguns sites não permitem exibição dentro deste aplicativo.</div>
       <div id="pageArea" class="page-area"><div class="empty-reader"><span>▧</span><b>Seu capítulo aparecerá aqui</b><p>Use um endereço de capítulo ou adicione imagens diretamente.</p></div></div>
       <div class="reader-bottom"><button id="prevChapter">← Capítulo anterior</button><button id="nextChapter">Próximo capítulo →</button></div>
@@ -66,5 +67,6 @@
     <button id="addImages">▧　Adicionar imagens do capítulo</button>
   </div>
   <input id="imageFiles" type="file" accept="image/*" multiple hidden>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="app.js"></script>
 </body></html>
