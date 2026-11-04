@@ -4,11 +4,10 @@ function saveHistory(url,title){historyItems=historyItems.filter(x=>x.url!==url)
 function renderHistory(){const html=historyItems.length?historyItems.map(x=>`<div class="history-item" data-url="${escapeAttr(x.url)}"><div class="history-thumb">✧</div><small>${escapeHtml(x.title)}</small></div>`).join(''):'<p class="muted">Seus mangás acessados aparecerão aqui.</p>';$('#historyList').innerHTML=html;$('#fullHistory').innerHTML=historyItems.length?historyItems.map(x=>`<div class="history-entry" data-url="${escapeAttr(x.url)}"><b>${escapeHtml(x.title)}</b><p class="muted">${escapeHtml(x.url)} · ${x.at}</p></div>`).join(''):'<p class="muted">Nenhum histórico ainda.</p>';$$('[data-url]').forEach(el=>el.onclick=()=>openReader(el.dataset.url))}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function escapeAttr(s){return escapeHtml(s)}
 function show(id){$$('.view').forEach(v=>v.classList.add('hidden'));$('#'+id).classList.remove('hidden');$$('.bottom-nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));$('#popupMenu').classList.add('hidden')}
-function openReader(url,title){try{let u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw 0;currentUrl=u.href;title=title||u.hostname;$('#readerAddress').value=u.href;$('#pageArea').innerHTML='<iframe class="manga-frame" title="Leitor do site de mangá" referrerpolicy="no-referrer" allow="fullscreen" loading="eager"></iframe>';const frame=$('#pageArea iframe');frame.src=buildTranslatedUrl(u.href);$('#readerMessage').textContent='Tentando abrir este capítulo já traduzido para português...';saveHistory(u.href,title);show('readerView')}catch(e){alert('Digite um endereço válido começando com https://')}}
-function buildTranslatedUrl(url){return 'https://translate.google.com/translate?sl=auto&tl=pt&u='+encodeURIComponent(url);}
-function openTranslatedPage(url){const frame=$('#pageArea iframe');if(frame)frame.src=buildTranslatedUrl(url);}
+function openReader(url,title){try{const u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw 0;currentUrl=u.href;title=title||u.hostname;$('#readerAddress').value=u.href;$('#pageArea').innerHTML='<div class="empty-reader"><span>🌐</span><b>Capítulo externo</b><p>Por segurança, sites externos não podem ser traduzidos dentro desta página. Abra o capítulo no site original e adicione capturas/imagens aqui para usar o OCR e a tradução.</p><a class="secondary-btn" href="'+escapeAttr(u.href)+'" target="_blank" rel="noopener noreferrer">Abrir capítulo no site</a></div>';$('#readerMessage').textContent='Para traduzir, carregue as imagens do capítulo. Alguns sites bloqueiam leitura automática por outros aplicativos.';saveHistory(u.href,title);show('readerView')}catch(e){alert('Digite um endereço válido começando com https://')}}
+function openTranslatedPage(url){$('#readerMessage').textContent='A tradução automática de páginas externas foi desativada: o site de origem impede acesso seguro pelo navegador integrado. Abra o capítulo e adicione as imagens para traduzir.';}
 $('#urlForm').onsubmit=e=>{e.preventDefault();openReader($('#mangaUrl').value)};
-$('#readerMenuBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();$('#popupMenu').classList.toggle('hidden')});$('#reloadPage').onclick=()=>{const f=$('#pageArea iframe');if(f)f.src=currentUrl};
+$('#readerMenuBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();$('#popupMenu').classList.toggle('hidden')});$('#reloadPage').onclick=()=>{if(currentUrl)window.open(currentUrl,'_blank','noopener,noreferrer')};
 $('#backHome').onclick=()=>show('homeView');$('#homeBtn').onclick=()=>show('homeView');
 $('#menuBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();$('#popupMenu').classList.toggle('hidden')});
 $$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
@@ -62,7 +61,7 @@ syncMenuPrefs();
 
 
 // O botão principal inicia a tradução OCR das imagens escolhidas.
-$('#translateChapterBtn')?.addEventListener('click',()=>{if(selectedChapterImages.length){translateChapterImages();}else if(currentUrl){openTranslatedPage(currentUrl);}else{$('#imageFiles').click();}});
+$('#translateChapterBtn')?.addEventListener('click',()=>{if(selectedChapterImages.length){translateChapterImages();}else{$('#readerMessage').textContent='Primeiro adicione as imagens do capítulo pelo menu ☰ ou pelo botão abaixo.';$('#imageFiles').click();}});
 const autoMode=$('#autoTranslateMode');if(autoMode){autoMode.checked=localStorage.getItem('mangaAutoTranslateMode')==='on';autoMode.addEventListener('change',()=>{localStorage.setItem('mangaAutoTranslateMode',autoMode.checked?'on':'off');if(autoMode.checked&&currentUrl)openTranslatedPage(currentUrl);});}
 async function translateChapterImages(){
  if(!selectedChapterImages.length){$('#imageFiles').click();return;}
@@ -72,20 +71,28 @@ async function translateChapterImages(){
   const blocks=[];
   for(let i=0;i<selectedChapterImages.length;i++){
    btn.textContent='⏳ Página '+(i+1)+'/'+selectedChapterImages.length;
-   const result=await Tesseract.recognize(selectedChapterImages[i],'eng');
+   const sourceCode=$('#ocrLanguage')?.value||'eng';
+   const result=await Tesseract.recognize(selectedChapterImages[i],sourceCode);
    const original=(result.data.text||'').trim();
    if(!original)continue;
-   const chunks=original.match(/[\\s\\S]{1,450}/g)||[original];
+   const chunks=original.match(/[\s\S]{1,450}/g)||[original];
    const translated=[];
    for(const chunk of chunks){
-    const url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(chunk)+'&langpair=en|pt-BR';
+    const sourceMap={eng:'en',jpn:'ja',kor:'ko',chi_sim:'zh-CN',spa:'es',fra:'fr',deu:'de'};
+    const targetMap={'Português (Brasil)':'pt-BR','English':'en','Español':'es','日本語':'ja'};
+    const source=sourceMap[sourceCode]||'en';
+    const target=targetMap[$('#targetLanguage').value]||'pt-BR';
+    const url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(chunk)+'&langpair='+encodeURIComponent(source+'|'+target);
     const response=await fetch(url);if(!response.ok)throw new Error('Falha no serviço de tradução');
-    const data=await response.json();translated.push(data.responseData?.translatedText||'Não foi possível traduzir este trecho.');
+    const data=await response.json();
+    const translatedText=data.responseData?.translatedText;
+    if(!translatedText)throw new Error(data.responseDetails||'Resposta vazia do serviço de tradução');
+    translated.push(translatedText);
    }
    blocks.push('<section><h3>Página '+(i+1)+'</h3><p><b>Original:</b><br>'+escapeHtml(original)+'</p><p><b>Português:</b><br>'+escapeHtml(translated.join(' '))+'</p></section>');
   }
-  out.innerHTML=blocks.length?blocks.join(''):'<p>Não encontrei texto legível nas imagens.</p>';
- }catch(err){out.innerHTML='<p>Não foi possível concluir. Verifique sua internet e tente novamente.</p>';}
+  out.innerHTML=blocks.length?blocks.join(''):'<p>Não encontrei texto legível nas imagens. Tente selecionar outro idioma de OCR.</p>';
+ }catch(err){out.innerHTML='<p>Não foi possível concluir a tradução: '+escapeHtml(err.message||'verifique sua internet e tente novamente')+'</p>';}
  finally{btn.disabled=false;btn.textContent='🖼️ Traduzir imagens';}
 }
 $('#translateImagesBtn')?.addEventListener('click',translateChapterImages);
